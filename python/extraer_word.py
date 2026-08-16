@@ -9,7 +9,7 @@ import re
 import zipfile
 from pathlib import Path
 
-ORIGINAL = Path(__file__).resolve().parent.parent / "Credenciales  Traumatologia.docx"
+ORIGINAL = Path(__file__).resolve().parent.parent / "recursos" / "Credenciales  Traumatologia.docx"
 
 
 def bloque(xml: str, etiqueta: str, desde: int) -> str:

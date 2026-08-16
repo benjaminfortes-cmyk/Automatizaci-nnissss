@@ -1,18 +1,27 @@
 """
-Arma index.html incrustando los logotipos dentro del archivo, para que
-funcione sin internet y se pueda copiar a cualquier computador.
+Genera js/datos.js: los logotipos, la foto y la plantilla de Word,
+todo incrustado en base64.
 
-Se llama index.html porque es el nombre que GitHub Pages busca en la
-raíz del sitio.
+Van incrustados a propósito. El navegador necesita los bytes crudos de
+los logotipos para armar el .docx, y leerlos con fetch no funciona al
+abrir la página con doble clic (file://). Así la página funciona igual
+publicada en internet que descargada en un pendrive.
 
-Uso:  python _fuente/generar.py
+Uso, desde la raíz del proyecto:
+
+    python python/generar.py
 """
 import base64
 import json
+import sys
 from pathlib import Path
 
 AQUI = Path(__file__).resolve().parent
-SALIDA = AQUI.parent / "index.html"
+RAIZ = AQUI.parent
+RECURSOS = RAIZ / "recursos"
+SALIDA = RAIZ / "js" / "datos.js"
+
+sys.path.insert(0, str(AQUI))
 
 LOGOS = {
     "arco":     "arco.png",
@@ -25,9 +34,9 @@ LOGOS = {
 }
 
 
-def a_data_uri(ruta: Path) -> str:
+def data_uri(ruta: Path, tipo: str) -> str:
     datos = base64.b64encode(ruta.read_bytes()).decode("ascii")
-    return f"data:image/png;base64,{datos}"
+    return f"data:{tipo};base64,{datos}"
 
 
 def piezas_word() -> dict:
@@ -62,23 +71,18 @@ def piezas_word() -> dict:
 
 
 def main() -> None:
-    incrustados = {
-        clave: a_data_uri(AQUI / "logos" / archivo)
-        for clave, archivo in LOGOS.items()
+    datos = {
+        "logos": {
+            clave: data_uri(RECURSOS / "logos" / archivo, "image/png")
+            for clave, archivo in LOGOS.items()
+        },
+        "foto": data_uri(RECURSOS / "foto.jpg", "image/jpeg"),
+        "word": piezas_word(),
     }
-    from limpiar import limpiar
 
-    plantilla = (AQUI / "plantilla.html").read_text(encoding="utf-8")
-    # Se limpia antes de incrustar: los datos traen direcciones con // que
-    # no son comentarios.
-    html = limpiar(plantilla)
-    html = html.replace("__LOGOS__", json.dumps(incrustados, indent=0))
-    html = html.replace("__DOCX__", json.dumps(piezas_word(), ensure_ascii=False))
-
-    foto = base64.b64encode((AQUI / "foto.jpg").read_bytes()).decode("ascii")
-    html = html.replace("__FOTO__", f"data:image/jpeg;base64,{foto}")
-    SALIDA.write_text(html, encoding="utf-8")
-    print(f"Listo: {SALIDA}  ({SALIDA.stat().st_size/1024:.0f} KB)")
+    cuerpo = json.dumps(datos, ensure_ascii=False, separators=(",", ":"))
+    SALIDA.write_text(f"const DATOS = {cuerpo};\n", encoding="utf-8")
+    print(f"Listo: {SALIDA.relative_to(RAIZ)}  ({SALIDA.stat().st_size/1024:.0f} KB)")
 
 
 if __name__ == "__main__":

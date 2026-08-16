@@ -195,7 +195,7 @@ def armar(items, evento, por_hoja, destino: Path):
         z.writestr("word/_rels/document.xml.rels", DOC_RELS)
         z.writestr("word/styles.xml", STYLES)
         for n in range(1, 8):
-            z.writestr(f"word/media/image{n}.png", (AQUI / "logos" / ORDEN[n]).read_bytes())
+            z.writestr(f"word/media/image{n}.png", (AQUI.parent / "recursos" / "logos" / ORDEN[n]).read_bytes())
     return destino
 
 
