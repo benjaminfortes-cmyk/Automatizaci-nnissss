@@ -1,6 +1,9 @@
 """
-Arma Credenciales.html incrustando los logotipos dentro del archivo,
-para que funcione sin internet y se pueda copiar a cualquier computador.
+Arma index.html incrustando los logotipos dentro del archivo, para que
+funcione sin internet y se pueda copiar a cualquier computador.
+
+Se llama index.html porque es el nombre que GitHub Pages busca en la
+raíz del sitio.
 
 Uso:  python _fuente/generar.py
 """
@@ -9,7 +12,7 @@ import json
 from pathlib import Path
 
 AQUI = Path(__file__).resolve().parent
-SALIDA = AQUI.parent / "Credenciales.html"
+SALIDA = AQUI.parent / "index.html"
 
 LOGOS = {
     "arco":     "arco.png",

@@ -1,1 +1,13 @@
-Credenciales  Traumatologia
+# Archivos temporales de Word
+~$*
+
+# Python
+__pycache__/
+*.pyc
+
+# Sistema
+Thumbs.db
+.DS_Store
+
+# Herramientas locales
+.claude/
