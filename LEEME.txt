@@ -24,9 +24,9 @@ La barra de abajo cambia de color, igual que en el Word original:
   · ORGANIZADOR  azul marino
   · EXPOSITOR    magenta
 
-Si creas un rol propio con "Otro…", eliges cuál de los tres colores
-usar. En la lista, el punto de color al lado de cada nombre te muestra
-cómo va a salir.
+Si creas un rol propio con "Otro…", se abre una paleta y eliges el
+color que quieras, el que sea. En la lista, el punto de color al lado
+de cada nombre te muestra cómo va a salir.
 
 
 MEDIDAS
@@ -37,8 +37,6 @@ tijera por el medio.
 
   · 8 por hoja → separación 3 mm, margen libre 9,2 mm arriba y abajo
   · 6 por hoja → separación 6 mm, margen libre 39,2 mm arriba y abajo
-
-Si tu impresora recorta los bordes de la hoja, cambia a 6 por hoja.
 
 
 DESCARGAS

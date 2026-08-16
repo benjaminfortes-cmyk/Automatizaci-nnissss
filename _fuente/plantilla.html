@@ -24,6 +24,7 @@
   --line:     rgba(232,237,247,.12);
   --line-2:   rgba(232,237,247,.06);
   --danger:   #e0736b;
+  --amor:     #f4707d;
 
   --ui:   "Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
   --mono: "Cascadia Mono",Consolas,ui-monospace,"SF Mono",monospace;
@@ -42,7 +43,22 @@ body{
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--teal-hi); outline-offset:2px}
 
-.app{display:flex; height:100%; align-items:stretch}
+.marco{display:flex; flex-direction:column; height:100%}
+.app{display:flex; flex:1; min-height:0; align-items:stretch}
+
+.cinta{
+  flex:0 0 auto; margin:0; padding:11px 16px; text-align:center;
+  background:var(--ink-2); border-bottom:1px solid var(--line);
+  font-family:var(--mono); font-size:12px; letter-spacing:.34em;
+  text-transform:uppercase; color:var(--amor);
+}
+.cinta span{letter-spacing:0; margin:0 .5em; font-size:13px}
+
+.rail__amor{
+  display:flex; flex-direction:column; gap:1px;
+  margin:11px 0 0; font-size:12px; color:var(--amor); font-style:italic;
+}
+.rail__amor b{font-weight:600; font-style:normal; letter-spacing:.04em}
 
 /* ---------- Riel de control ---------- */
 .rail{
@@ -97,12 +113,20 @@ button,input,select,textarea{font:inherit;color:inherit}
   background:var(--ink-3); border:1px solid var(--line); border-radius:3px;
   font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
 }
-.tintas{display:flex; gap:6px; margin-top:6px}
-.tinta{
-  width:28px; height:22px; cursor:pointer; border-radius:3px;
-  border:1px solid var(--line);
+.tintaFila{
+  display:flex; align-items:center; gap:9px; margin-top:7px;
+  font-size:12px; color:var(--muted);
 }
-.tinta[aria-pressed="true"]{box-shadow:0 0 0 2px var(--teal-hi)}
+#tinta{
+  width:44px; height:26px; padding:0; cursor:pointer; flex:0 0 auto;
+  background:var(--ink-3); border:1px solid var(--line); border-radius:3px;
+}
+#tinta::-webkit-color-swatch-wrapper{padding:3px}
+#tinta::-webkit-color-swatch{border:0; border-radius:2px}
+#tintaHex{
+  margin-left:auto; font-family:var(--mono); font-size:10.5px;
+  letter-spacing:.06em; color:var(--text);
+}
 
 /* Nombres */
 .modos{display:flex; gap:4px; margin:0 0 9px}
@@ -149,7 +173,8 @@ textarea#nombres::placeholder{color:#5d6d8f; font-family:var(--ui); font-size:13
   letter-spacing:.18em; text-transform:uppercase; color:var(--muted);
 }
 .descargas{display:grid; grid-template-columns:repeat(3,1fr); gap:5px}
-.descargas .btn{padding:9px 4px; font-size:12.5px}
+.descargas .btn{padding:9px 4px; font-size:12px; gap:5px}
+.corazon{color:#ff3b46; font-style:normal; font-size:11px; line-height:1}
 .estado{
   min-height:16px; margin:9px 0 10px; font-size:11.5px; line-height:1.4;
   color:var(--teal-hi);
@@ -225,6 +250,7 @@ details.set[open] > summary::before{content:"– "}
   margin:12px 0 0; font-size:11.5px; color:var(--muted); line-height:1.5;
 }
 .note b{color:var(--text); font-weight:600}
+.note--amor{color:var(--amor); font-style:italic; font-size:12.5px}
 
 /* ---------- Mesa de luz ---------- */
 .table{
@@ -302,8 +328,8 @@ details.set[open] > summary::before{content:"– "}
 
 @media print{
   html,body{height:auto; background:#fff}
-  .rail,.table__bar{display:none !important}
-  .app{display:block}
+  .rail,.table__bar,.cinta{display:none !important}
+  .app,.marco{display:block; height:auto}
   .table{overflow:visible; padding:0; background:#fff}
   .sheets{display:block; gap:0}
   .sheet-tag{display:none}
@@ -321,6 +347,7 @@ details.set[open] > summary::before{content:"– "}
 }
 
 @media (max-width:1100px){
+  .marco{height:auto}
   .app{flex-direction:column; height:auto}
   .rail{width:100%; flex:none; border-right:0; border-bottom:1px solid var(--line)}
   .rail__body{overflow:visible}
@@ -330,14 +357,18 @@ details.set[open] > summary::before{content:"– "}
 </head>
 <body>
 
+<div class="marco">
+
+<p class="cinta"><span>♥</span> my niss la mejor <span>♥</span></p>
+
 <div class="app">
 
-  <!-- ================= RIEL ================= -->
   <aside class="rail">
     <div class="rail__head">
       <p class="rail__kicker">Armado de credenciales</p>
       <h1 class="rail__title" id="hTitulo">2ª Jornada de Traumatología</h1>
       <p class="rail__sub" id="hInst">ACEM UCN · Universidad Católica del Norte</p>
+      <p class="rail__amor">para my niss con mucho cariño<b>te amito</b></p>
     </div>
 
     <div class="rail__body">
@@ -352,10 +383,10 @@ details.set[open] > summary::before{content:"– "}
         </div>
         <div id="cajaOtro">
           <input id="rolOtro" placeholder="Escribe el rol" maxlength="24">
-          <div class="tintas" id="tintas">
-            <button class="tinta" data-color="#3e9fa0" style="background:#3e9fa0" aria-pressed="false" aria-label="Verde azulado"></button>
-            <button class="tinta" data-color="#1d2d59" style="background:#1d2d59" aria-pressed="true"  aria-label="Azul marino"></button>
-            <button class="tinta" data-color="#9e1f79" style="background:#9e1f79" aria-pressed="false" aria-label="Magenta"></button>
+          <div class="tintaFila">
+            <input type="color" id="tinta" value="#1d2d59" aria-label="Color de la barra">
+            <span>Color de la barra</span>
+            <code id="tintaHex">#1D2D59</code>
           </div>
         </div>
       </section>
@@ -399,8 +430,6 @@ details.set[open] > summary::before{content:"– "}
           <button class="opt" data-n="6" aria-pressed="false">6 por hoja</button>
         </div>
         <p class="note" id="notaHoja"></p>
-        <p class="note">Si tu impresora recorta los bordes de la hoja, usa 6 por hoja: deja
-        mucho más margen libre.</p>
       </details>
 
       <details class="set">
@@ -421,6 +450,7 @@ details.set[open] > summary::before{content:"– "}
 
       <details class="set">
         <summary>Antes de imprimir</summary>
+        <p class="note note--amor">Por cada impresión me debe un besito ♥</p>
         <p class="note">
           En el cuadro de impresión de Chrome elige <b>Más ajustes</b> y deja
           <b>Escala: 100 %</b> (no “Ajustar al área de impresión”) y activa
@@ -435,9 +465,9 @@ details.set[open] > summary::before{content:"– "}
 
       <p class="foot__lbl">Descargar</p>
       <div class="descargas">
-        <button class="btn btn--ghost" id="dlPdf">PDF</button>
-        <button class="btn btn--ghost" id="dlWord">Word</button>
-        <button class="btn btn--ghost" id="dlPng">Imágenes</button>
+        <button class="btn btn--ghost" id="dlPdf">PDF<i class="corazon">♥</i></button>
+        <button class="btn btn--ghost" id="dlWord">Word<i class="corazon">♥</i></button>
+        <button class="btn btn--ghost" id="dlPng">Imágenes<i class="corazon">♥</i></button>
       </div>
 
       <p class="estado" id="estado" role="status"></p>
@@ -445,7 +475,6 @@ details.set[open] > summary::before{content:"– "}
     </div>
   </aside>
 
-  <!-- ================= MESA DE LUZ ================= -->
   <main class="table">
     <div class="table__bar">
       <span id="resumen">Sin credenciales</span>
@@ -454,6 +483,7 @@ details.set[open] > summary::before{content:"– "}
     <div class="sheets" id="sheets"></div>
   </main>
 
+</div>
 </div>
 
 <script>
@@ -707,21 +737,19 @@ $("#roles").addEventListener("click", e => {
   if(b.dataset.rol === "__otro"){
     caja.classList.add("on"); $("#rolOtro").focus();
     rolActivo = $("#rolOtro").value.toUpperCase() || "ASISTENTE";
-    colorActivo = $('.tinta[aria-pressed="true"]').dataset.color;
+    colorActivo = $("#tinta").value;
   }else{
     caja.classList.remove("on");
     rolActivo = b.dataset.rol;
-    colorActivo = null;              // usa el color propio del rol
+    colorActivo = null;
   }
 });
 $("#rolOtro").addEventListener("input", e => {
   rolActivo = e.target.value.toUpperCase() || "ASISTENTE";
 });
-$("#tintas").addEventListener("click", e => {
-  const b = e.target.closest(".tinta");
-  if(!b) return;
-  document.querySelectorAll(".tinta").forEach(x => x.setAttribute("aria-pressed", x === b));
-  colorActivo = b.dataset.color;
+$("#tinta").addEventListener("input", e => {
+  colorActivo = e.target.value;
+  $("#tintaHex").textContent = colorActivo.toUpperCase();
 });
 
 /* Dos formas de cargar: de a uno (mesón de acreditación) o pegando la lista. */

@@ -66,8 +66,13 @@ def main() -> None:
         clave: a_data_uri(AQUI / "logos" / archivo)
         for clave, archivo in LOGOS.items()
     }
+    from limpiar import limpiar
+
     plantilla = (AQUI / "plantilla.html").read_text(encoding="utf-8")
-    html = plantilla.replace("__LOGOS__", json.dumps(incrustados, indent=0))
+    # Se limpia antes de incrustar: los datos traen direcciones con // que
+    # no son comentarios.
+    html = limpiar(plantilla)
+    html = html.replace("__LOGOS__", json.dumps(incrustados, indent=0))
     html = html.replace("__DOCX__", json.dumps(piezas_word(), ensure_ascii=False))
     SALIDA.write_text(html, encoding="utf-8")
     print(f"Listo: {SALIDA}  ({SALIDA.stat().st_size/1024:.0f} KB)")
