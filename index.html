@@ -242,16 +242,21 @@ details.set[open] > summary::before{content:"– "}
 .note--amor{color:var(--amor); font-style:italic; font-size:12.5px}
 
 .table{
-  flex:1; overflow-y:auto; padding:26px 0 60px; background:
+  flex:1; overflow-y:auto; padding:0 0 60px; background:
     radial-gradient(120% 60% at 50% 0%, #16223b 0%, var(--ink) 62%);
 }
+
 .table__bar{
-  position:sticky; top:0; z-index:5; margin:-26px 0 22px; padding:13px 28px;
+  position:sticky; top:0; z-index:5; margin:0 0 24px; padding:13px 28px;
   display:flex; align-items:center; justify-content:space-between; gap:16px;
-  background:rgba(16,26,46,.86); backdrop-filter:blur(8px);
+  background:var(--ink-2);
   border-bottom:1px solid var(--line);
   font-family:var(--mono); font-size:10.5px; letter-spacing:.14em;
   text-transform:uppercase; color:var(--muted);
+  transition:transform .22s ease, opacity .18s ease;
+}
+.table__bar--oculta{
+  transform:translateY(-101%); opacity:0; pointer-events:none;
 }
 .table__bar b{color:var(--text); font-weight:600}
 
@@ -618,6 +623,12 @@ function escalar(){
   });
 }
 window.addEventListener("resize", escalar);
+
+const mesa = document.querySelector(".table");
+const barra = document.querySelector(".table__bar");
+mesa.addEventListener("scroll", () => {
+  barra.classList.toggle("table__bar--oculta", mesa.scrollTop > 12);
+}, { passive: true });
 
 function pintarLista(){
   const ul = $("#roster");
