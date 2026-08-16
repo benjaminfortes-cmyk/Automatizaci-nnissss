@@ -74,6 +74,9 @@ def main() -> None:
     html = limpiar(plantilla)
     html = html.replace("__LOGOS__", json.dumps(incrustados, indent=0))
     html = html.replace("__DOCX__", json.dumps(piezas_word(), ensure_ascii=False))
+
+    foto = base64.b64encode((AQUI / "foto.jpg").read_bytes()).decode("ascii")
+    html = html.replace("__FOTO__", f"data:image/jpeg;base64,{foto}")
     SALIDA.write_text(html, encoding="utf-8")
     print(f"Listo: {SALIDA}  ({SALIDA.stat().st_size/1024:.0f} KB)")
 
