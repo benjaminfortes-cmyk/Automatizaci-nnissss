@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credenciales · 2ª Jornada de Traumatología</title>
+<style>
+/* ============================================================
+   MESA DE LUZ — interfaz de armado
+   La credencial reproduce el Word original milímetro a milímetro.
+   Toda la geometría de la credencial está en puntos (pt), tomada
+   del PDF que genera Word. No cambiar sin volver a medir.
+   ============================================================ */
+
+:root{
+  --ink:      #101a2e;
+  --ink-2:    #16223b;
+  --ink-3:    #1e2c49;
+  --navy:     #1d2d59;
+  --teal:     #3e9fa0;
+  --teal-hi:  #5fc3c4;
+  --text:     #e8edf7;
+  --muted:    #8494b4;
+  --line:     rgba(232,237,247,.12);
+  --line-2:   rgba(232,237,247,.06);
+  --danger:   #e0736b;
+
+  --ui:   "Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono: "Cascadia Mono",Consolas,ui-monospace,"SF Mono",monospace;
+  --cred: Calibri,Carlito,"Segoe UI",sans-serif;
+
+  --rail: 380px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--ink); color:var(--text);
+  font-family:var(--ui); font-size:14px; line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal-hi); outline-offset:2px}
+
+.app{display:flex; height:100%; align-items:stretch}
+
+/* ---------- Riel de control ---------- */
+.rail{
+  width:var(--rail); flex:0 0 var(--rail);
+  background:var(--ink-2); border-right:1px solid var(--line);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.rail__head{padding:20px 22px 16px; border-bottom:1px solid var(--line)}
+.rail__kicker{
+  font-family:var(--mono); font-size:10px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--teal); margin:0 0 6px;
+}
+.rail__title{margin:0; font-size:17px; font-weight:600; letter-spacing:-.01em}
+.rail__sub{margin:2px 0 0; font-size:12px; color:var(--muted)}
+
+.rail__body{flex:1; overflow-y:auto; padding:18px 22px 4px}
+.rail__foot{padding:14px 22px 18px; border-top:1px solid var(--line); background:var(--ink-2)}
+
+.step{margin:0 0 22px}
+.step__label{
+  display:flex; align-items:baseline; gap:8px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 9px;
+}
+.step__n{color:var(--teal)}
+.step__hint{margin:7px 0 0; font-size:12px; color:var(--muted)}
+
+/* Selector de rol */
+.roles{display:grid; grid-template-columns:repeat(2,1fr); gap:6px}
+.role{
+  padding:9px 10px; text-align:center; cursor:pointer;
+  background:var(--ink-3); border:1px solid var(--line); border-radius:3px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted);
+  transition:background .12s, color .12s, border-color .12s;
+}
+.role:hover{color:var(--text); border-color:rgba(232,237,247,.24)}
+.role[aria-pressed="true"]{
+  background:var(--navy); border-color:var(--teal); color:#fff;
+}
+
+.pip{
+  width:8px; height:8px; border-radius:50%; display:inline-block;
+  margin-right:6px; vertical-align:-1px; box-shadow:0 0 0 1px rgba(255,255,255,.45);
+}
+.pip--multi{background:linear-gradient(90deg,#3e9fa0 33%,#1d2d59 33% 66%,#9e1f79 66%)}
+
+#cajaOtro{display:none}
+#cajaOtro.on{display:block}
+#rolOtro{
+  width:100%; margin-top:6px; padding:9px 11px;
+  background:var(--ink-3); border:1px solid var(--line); border-radius:3px;
+  font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+}
+.tintas{display:flex; gap:6px; margin-top:6px}
+.tinta{
+  width:28px; height:22px; cursor:pointer; border-radius:3px;
+  border:1px solid var(--line);
+}
+.tinta[aria-pressed="true"]{box-shadow:0 0 0 2px var(--teal-hi)}
+
+/* Nombres */
+.modos{display:flex; gap:4px; margin:0 0 9px}
+.modo{
+  flex:1; padding:7px 8px; cursor:pointer; border-radius:3px;
+  background:transparent; border:1px solid var(--line); color:var(--muted);
+  font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+}
+.modo:hover{color:var(--text)}
+.modo[aria-pressed="true"]{background:var(--ink-3); border-color:var(--teal); color:var(--text)}
+
+input#nombreUno{
+  width:100%; padding:11px 12px;
+  background:var(--ink-3); border:1px solid var(--line); border-radius:3px;
+  font-family:var(--cred); font-size:15px; text-transform:uppercase;
+}
+input#nombreUno::placeholder{
+  color:#5d6d8f; font-family:var(--ui); font-size:13px; text-transform:none;
+}
+
+textarea#nombres{
+  width:100%; min-height:132px; resize:vertical; padding:11px 12px;
+  background:var(--ink-3); border:1px solid var(--line); border-radius:3px;
+  font-family:var(--cred); font-size:14px; line-height:1.6;
+}
+textarea#nombres::placeholder{color:#5d6d8f; font-family:var(--ui); font-size:13px}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; padding:11px 14px; cursor:pointer; border-radius:3px;
+  border:1px solid transparent; background:var(--teal); color:#06232a;
+  font-weight:600; font-size:13.5px;
+  transition:filter .12s;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn--ghost{background:transparent; border-color:var(--line); color:var(--text); font-weight:500}
+.btn--ghost:hover{border-color:rgba(232,237,247,.3); filter:none}
+.btn--print{background:#fff; color:var(--navy); font-weight:600}
+.btn--tenue{font-size:12px; padding:8px 12px; color:var(--muted)}
+.btn[disabled]{opacity:.45; cursor:default; filter:none}
+
+.foot__lbl{
+  margin:14px 0 7px; font-family:var(--mono); font-size:10px;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--muted);
+}
+.descargas{display:grid; grid-template-columns:repeat(3,1fr); gap:5px}
+.descargas .btn{padding:9px 4px; font-size:12.5px}
+.estado{
+  min-height:16px; margin:9px 0 10px; font-size:11.5px; line-height:1.4;
+  color:var(--teal-hi);
+}
+
+/* Lista / roster */
+.roster__head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  font-family:var(--mono); font-size:10px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 9px;
+}
+.roster__count{color:var(--teal)}
+.roster{list-style:none; margin:0; padding:0}
+.row{
+  display:grid; grid-template-columns:38px 1fr 9px auto auto; align-items:center; gap:8px;
+  padding:7px 0; border-bottom:1px solid var(--line-2);
+}
+.row__pip{
+  width:9px; height:9px; border-radius:50%;
+  box-shadow:0 0 0 1px rgba(255,255,255,.45);
+}
+/* La posición dice en qué hoja y lugar sale impresa esa credencial */
+.row__pos{
+  font-family:var(--mono); font-size:10px; color:var(--teal);
+  letter-spacing:.04em; white-space:nowrap;
+}
+.row__name{
+  background:transparent; border:0; border-bottom:1px solid transparent;
+  padding:2px 0; width:100%; font-size:13.5px; text-transform:uppercase;
+}
+.row__name:hover{border-bottom-color:var(--line)}
+.row__name:focus{outline:0; border-bottom-color:var(--teal)}
+.row__role{
+  background:var(--ink-3); border:1px solid var(--line); border-radius:2px;
+  padding:3px 5px; font-family:var(--mono); font-size:9.5px; letter-spacing:.06em;
+  color:var(--muted); max-width:104px;
+}
+.row__del{
+  background:transparent; border:0; cursor:pointer; color:#5d6d8f;
+  padding:2px 4px; font-size:15px; line-height:1; border-radius:2px;
+}
+.row__del:hover{color:var(--danger)}
+
+.empty{
+  padding:22px 16px; text-align:center; color:var(--muted); font-size:12.5px;
+  border:1px dashed var(--line); border-radius:3px;
+}
+
+/* Ajustes plegables */
+details.set{margin:0 0 18px; border-top:1px solid var(--line-2); padding-top:14px}
+details.set > summary{
+  cursor:pointer; list-style:none; font-family:var(--mono); font-size:10px;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--muted);
+}
+details.set > summary::-webkit-details-marker{display:none}
+details.set > summary::before{content:"+ "; color:var(--teal)}
+details.set[open] > summary::before{content:"– "}
+.field{margin:12px 0 0}
+.field label{display:block; font-size:11.5px; color:var(--muted); margin:0 0 4px}
+.field input{
+  width:100%; padding:8px 10px; background:var(--ink-3);
+  border:1px solid var(--line); border-radius:3px; font-size:13px;
+}
+.opts{display:flex; gap:6px; margin-top:12px}
+.opt{
+  flex:1; padding:8px; cursor:pointer; text-align:center;
+  background:var(--ink-3); border:1px solid var(--line); border-radius:3px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.08em; color:var(--muted);
+}
+.opt[aria-pressed="true"]{background:var(--navy); border-color:var(--teal); color:#fff}
+
+.note{
+  margin:12px 0 0; font-size:11.5px; color:var(--muted); line-height:1.5;
+}
+.note b{color:var(--text); font-weight:600}
+
+/* ---------- Mesa de luz ---------- */
+.table{
+  flex:1; overflow-y:auto; padding:26px 0 60px; background:
+    radial-gradient(120% 60% at 50% 0%, #16223b 0%, var(--ink) 62%);
+}
+.table__bar{
+  position:sticky; top:0; z-index:5; margin:-26px 0 22px; padding:13px 28px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  background:rgba(16,26,46,.86); backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted);
+}
+.table__bar b{color:var(--text); font-weight:600}
+
+.sheets{display:flex; flex-direction:column; align-items:center; gap:28px}
+.sheet-wrap{position:relative}
+.sheet-tag{
+  position:absolute; left:0; top:-17px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--muted);
+}
+.sheet{
+  width:215.9mm; height:279.4mm; background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  transform-origin:top left; box-shadow:0 18px 44px rgba(0,0,0,.5);
+}
+/* La separación deja el pasillo por donde entra la tijera. */
+.grid{display:grid; grid-template-columns:repeat(2,93mm); grid-auto-rows:63mm; gap:var(--sep,3mm)}
+
+/* ============================================================
+   CREDENCIAL — 93 × 63 mm
+   Tipografía, colores y posiciones tomados del Word original;
+   la altura es la que define la fila de la tabla (3572 twips).
+   ============================================================ */
+.cred{
+  position:relative; width:93mm; height:63mm;
+  background:#fff; font-family:var(--cred); overflow:hidden;
+}
+.cred::after{
+  content:""; position:absolute; inset:0;
+  border:.48pt solid #999999; pointer-events:none;
+}
+.cred img{position:absolute; display:block}
+.cred .t{
+  position:absolute; left:0; width:100%; text-align:center;
+  line-height:1; white-space:nowrap;
+}
+.cred .titulo   {font-size:12pt;    font-weight:700; color:#1d2d59; top:32.54pt}
+.cred .subtitulo{font-size:10.56pt; font-weight:700; color:#3e9fa0; top:47.66pt}
+.cred .inst     {font-size:9.96pt;  font-weight:400; color:#6b6b6b; top:62.51pt}
+.cred .nombre   {font-weight:700; color:#747474; text-transform:uppercase}
+.cred .regla{position:absolute; left:3.57pt; top:103.94pt; width:256.49pt; height:.48pt; background:#d9d9d9}
+.cred .auspician{
+  font-size:9pt; font-weight:700; color:#6b6b6b; top:113.39pt;
+  letter-spacing:.5pt; text-transform:uppercase;
+}
+/* El color de la barra distingue el rol, igual que en el Word original. */
+.cred .barra{
+  position:absolute; left:7.11pt; top:148.02pt; width:249.41pt; height:25.56pt;
+  background:var(--rol,#1d2d59);
+}
+.cred .rol{
+  position:absolute; left:0; width:100%; text-align:center; top:155.82pt;
+  font-size:12pt; font-weight:700; color:#fff; line-height:1;
+  letter-spacing:1pt; text-transform:uppercase; white-space:nowrap;
+}
+/* El arco superior derecho es el mismo PNG girado 90°, igual que en Word */
+.cred .arco-der{position:absolute; right:.07pt; top:.13pt; width:33.6pt; height:36.45pt}
+.cred .arco-der img{left:-1.425pt; top:1.425pt; width:36.45pt; height:33.6pt; transform:rotate(90deg)}
+
+/* ---------- Impresión ---------- */
+@page{ size:letter; margin:0 }
+
+@media print{
+  html,body{height:auto; background:#fff}
+  .rail,.table__bar{display:none !important}
+  .app{display:block}
+  .table{overflow:visible; padding:0; background:#fff}
+  .sheets{display:block; gap:0}
+  .sheet-tag{display:none}
+  .sheet-wrap{height:auto !important; width:auto !important}
+  .sheet{
+    transform:none !important; margin-left:0 !important; box-shadow:none;
+    /* 0,2 mm menos que la hoja carta: evita que Chrome empuje una
+       página en blanco entre hoja y hoja por redondeo. */
+    height:279.2mm;
+    break-after:page; page-break-after:always;
+    break-inside:avoid; page-break-inside:avoid;
+  }
+  .sheet:last-child{break-after:auto; page-break-after:auto}
+  *{ -webkit-print-color-adjust:exact; print-color-adjust:exact }
+}
+
+@media (max-width:1100px){
+  .app{flex-direction:column; height:auto}
+  .rail{width:100%; flex:none; border-right:0; border-bottom:1px solid var(--line)}
+  .rail__body{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none !important} }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ================= RIEL ================= -->
+  <aside class="rail">
+    <div class="rail__head">
+      <p class="rail__kicker">Armado de credenciales</p>
+      <h1 class="rail__title" id="hTitulo">2ª Jornada de Traumatología</h1>
+      <p class="rail__sub" id="hInst">ACEM UCN · Universidad Católica del Norte</p>
+    </div>
+
+    <div class="rail__body">
+
+      <section class="step">
+        <p class="step__label"><span class="step__n">01</span> Rol</p>
+        <div class="roles" id="roles">
+          <button class="role" data-rol="ASISTENTE"   aria-pressed="true"><i class="pip" style="background:#3e9fa0"></i>Asistente</button>
+          <button class="role" data-rol="ORGANIZADOR" aria-pressed="false"><i class="pip" style="background:#1d2d59"></i>Organizador</button>
+          <button class="role" data-rol="EXPOSITOR"   aria-pressed="false"><i class="pip" style="background:#9e1f79"></i>Expositor</button>
+          <button class="role" data-rol="__otro"      aria-pressed="false"><i class="pip pip--multi"></i>Otro…</button>
+        </div>
+        <div id="cajaOtro">
+          <input id="rolOtro" placeholder="Escribe el rol" maxlength="24">
+          <div class="tintas" id="tintas">
+            <button class="tinta" data-color="#3e9fa0" style="background:#3e9fa0" aria-pressed="false" aria-label="Verde azulado"></button>
+            <button class="tinta" data-color="#1d2d59" style="background:#1d2d59" aria-pressed="true"  aria-label="Azul marino"></button>
+            <button class="tinta" data-color="#9e1f79" style="background:#9e1f79" aria-pressed="false" aria-label="Magenta"></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="step">
+        <p class="step__label"><span class="step__n">02</span> Nombres</p>
+
+        <div class="modos" id="modos">
+          <button class="modo" data-modo="uno"  aria-pressed="true">Uno por uno</button>
+          <button class="modo" data-modo="lote" aria-pressed="false">Pegar lista</button>
+        </div>
+
+        <div id="panelUno">
+          <input id="nombreUno" placeholder="Nombre y apellido" autocomplete="off">
+          <p class="step__hint">Escribe el nombre y presiona <b>Enter</b>. Se agrega y el campo queda listo para el siguiente.</p>
+        </div>
+
+        <div id="panelLote" hidden>
+          <textarea id="nombres" placeholder="Pega los nombres, uno por línea.&#10;&#10;Dra. Sandra Mahecha&#10;Camilo Bresky&#10;Valentina Cortés"></textarea>
+          <p class="step__hint">Un nombre por línea. Todos se agregan con el rol elegido arriba.</p>
+        </div>
+      </section>
+
+      <section class="step">
+        <button class="btn" id="agregar">Agregar a la lista</button>
+      </section>
+
+      <section class="step">
+        <p class="roster__head">
+          <span>Lista</span>
+          <span class="roster__count" id="conteo">0 credenciales</span>
+        </p>
+        <ul class="roster" id="roster"></ul>
+        <div class="empty" id="vacio">Aún no hay credenciales.<br>Pega los nombres y presiona Agregar.</div>
+      </section>
+
+      <details class="set">
+        <summary>Hoja</summary>
+        <div class="opts" id="porHoja">
+          <button class="opt" data-n="8" aria-pressed="true">8 por hoja</button>
+          <button class="opt" data-n="6" aria-pressed="false">6 por hoja</button>
+        </div>
+        <p class="note" id="notaHoja"></p>
+        <p class="note">Si tu impresora recorta los bordes de la hoja, usa 6 por hoja: deja
+        mucho más margen libre.</p>
+      </details>
+
+      <details class="set">
+        <summary>Datos del evento</summary>
+        <div class="field">
+          <label for="fTitulo">Título</label>
+          <input id="fTitulo" value="2ª JORNADA DE TRAUMATOLOGÍA">
+        </div>
+        <div class="field">
+          <label for="fSub">Subtítulo</label>
+          <input id="fSub" value="y Medicina del Ejercicio y Estilo de Vida">
+        </div>
+        <div class="field">
+          <label for="fInst">Institución</label>
+          <input id="fInst" value="ACEM UCN  ·  Universidad Católica del Norte">
+        </div>
+      </details>
+
+      <details class="set">
+        <summary>Antes de imprimir</summary>
+        <p class="note">
+          En el cuadro de impresión de Chrome elige <b>Más ajustes</b> y deja
+          <b>Escala: 100 %</b> (no “Ajustar al área de impresión”) y activa
+          <b>Gráficos de fondo</b>. Así las medidas salen exactas.
+        </p>
+      </details>
+
+    </div>
+
+    <div class="rail__foot">
+      <button class="btn btn--print" id="imprimir">Imprimir</button>
+
+      <p class="foot__lbl">Descargar</p>
+      <div class="descargas">
+        <button class="btn btn--ghost" id="dlPdf">PDF</button>
+        <button class="btn btn--ghost" id="dlWord">Word</button>
+        <button class="btn btn--ghost" id="dlPng">Imágenes</button>
+      </div>
+
+      <p class="estado" id="estado" role="status"></p>
+      <button class="btn btn--ghost btn--tenue" id="vaciar">Vaciar lista</button>
+    </div>
+  </aside>
+
+  <!-- ================= MESA DE LUZ ================= -->
+  <main class="table">
+    <div class="table__bar">
+      <span id="resumen">Sin credenciales</span>
+      <span id="medida">9,3 × 6,3 cm por credencial</span>
+    </div>
+    <div class="sheets" id="sheets"></div>
+  </main>
+
+</div>
+
+<script>
+/* ==========================================================
+   Datos: logotipos incrustados (se generan con _fuente/generar.py)
+   ========================================================== */
+const LOGOS = __LOGOS__;
+
+/* Piezas del .docx (plantilla sacada del Word original) */
+const DOCX = __DOCX__;
+
+/* ==========================================================
+   Estado
+   ========================================================== */
+const CLAVE = "acem-credenciales-v1";
+
+const estado = {
+  items: [],
+  porHoja: 8,
+  evento: {
+    titulo: "2ª JORNADA DE TRAUMATOLOGÍA",
+    sub:    "y Medicina del Ejercicio y Estilo de Vida",
+    inst:   "ACEM UCN  ·  Universidad Católica del Norte"
+  }
+};
+let rolActivo = "ASISTENTE";
+let colorActivo = null;   // solo se fija cuando el rol es personalizado
+
+const $ = s => document.querySelector(s);
+
+function guardar(){
+  try{ localStorage.setItem(CLAVE, JSON.stringify(estado)); }catch(e){}
+}
+function cargar(){
+  try{
+    const d = JSON.parse(localStorage.getItem(CLAVE) || "null");
+    if(!d) return;
+    if(Array.isArray(d.items)) estado.items = d.items;
+    if(d.porHoja) estado.porHoja = d.porHoja;
+    if(d.evento) Object.assign(estado.evento, d.evento);
+  }catch(e){}
+}
+
+/* ==========================================================
+   Credencial — geometría en pt tomada del original
+   ========================================================== */
+const ANCHO_NOMBRE = 249.41;   // pt disponibles para el nombre
+const BASE_NOMBRE  = 98.78;    // pt: línea base del nombre
+
+/* Cada rol tiene su color de barra en el Word original. */
+const COLOR_ROL = {
+  ASISTENTE:   "#3e9fa0",
+  ORGANIZADOR: "#1d2d59",
+  EXPOSITOR:   "#9e1f79"
+};
+const COLOR_POR_DEFECTO = "#1d2d59";
+
+function colorDe(item){
+  return item.color || COLOR_ROL[(item.rol || "").toUpperCase()] || COLOR_POR_DEFECTO;
+}
+
+const cvs = document.createElement("canvas").getContext("2d");
+
+/* Achica el nombre si no cabe, manteniendo la misma línea base. */
+function tamanoNombre(texto){
+  const aPx = 96/72;
+  for(let s = 12; s >= 7; s -= 0.25){
+    cvs.font = `700 ${s*aPx}px Calibri, Carlito, sans-serif`;
+    if(cvs.measureText(texto).width / aPx <= ANCHO_NOMBRE) return s;
+  }
+  return 7;
+}
+
+function credencial(item){
+  const nombre = (item.nombre || "").toUpperCase().trim();
+  const s = tamanoNombre(nombre);
+  const top = (BASE_NOMBRE - 0.75*s).toFixed(2);
+  const ev = estado.evento;
+
+  const el = document.createElement("div");
+  el.className = "cred";
+  el.style.setProperty("--rol", colorDe(item));
+  el.innerHTML = `
+    <img src="${LOGOS.arco}"     style="left:.05pt;  top:.18pt;  width:36.45pt; height:33.6pt">
+    <span class="arco-der"><img src="${LOGOS.arco}"></span>
+    <img src="${LOGOS.acem}"     style="left:119.94pt; top:2.33pt; width:23.75pt; height:26.2pt">
+
+    <div class="t titulo">${esc(ev.titulo)}</div>
+    <div class="t subtitulo">${esc(ev.sub)}</div>
+    <div class="t inst">${esc(ev.inst)}</div>
+
+    <div class="t nombre" style="top:${top}pt; font-size:${s}pt">${esc(nombre)}</div>
+    <div class="regla"></div>
+
+    <div class="t auspician">Auspician</div>
+    <img src="${LOGOS.bago}"     style="left:14.24pt; top:131.42pt; width:30.6pt; height:10.5pt">
+    <img src="${LOGOS.double}"   style="left:53.49pt; top:131.47pt; width:53.3pt; height:12.6pt">
+    <img src="${LOGOS.blunding}" style="left:112.49pt;top:131.62pt; width:49.9pt; height:11.75pt">
+    <img src="${LOGOS.sbsports}" style="left:169.64pt;top:130.52pt; width:48.8pt; height:12.85pt">
+    <img src="${LOGOS.sanbarto}" style="left:226.64pt;top:128.02pt; width:22.75pt;height:19.9pt">
+
+    <div class="barra"></div>
+    <div class="rol">${esc(item.rol)}</div>`;
+  return el;
+}
+
+function esc(t){
+  return String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+
+/* ==========================================================
+   Hojas
+   ========================================================== */
+/* Pasillo de corte entre tarjetas: se corta por el medio de esta separación.
+   Con 8 por hoja el papel manda y queda en 3 mm; con 6 sobra espacio. */
+const SEPARACION = { 8:"3mm", 6:"6mm" };
+
+function pintarHojas(){
+  const cont = $("#sheets");
+  cont.innerHTML = "";
+  const n = estado.porHoja;
+  const sep = SEPARACION[n] || "3mm";
+  const hojas = Math.max(1, Math.ceil(estado.items.length / n));
+
+  for(let h = 0; h < hojas; h++){
+    const wrap = document.createElement("div");
+    wrap.className = "sheet-wrap";
+
+    const tag = document.createElement("span");
+    tag.className = "sheet-tag";
+    tag.textContent = `Hoja ${h+1} de ${hojas}`;
+    wrap.appendChild(tag);
+
+    const hoja = document.createElement("div");
+    hoja.className = "sheet";
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    grid.style.setProperty("--sep", sep);
+    estado.items.slice(h*n, h*n + n).forEach(it => grid.appendChild(credencial(it)));
+    hoja.appendChild(grid);
+    wrap.appendChild(hoja);
+    cont.appendChild(wrap);
+  }
+  escalar();
+}
+
+/* Ajusta la hoja al ancho disponible sin deformarla. */
+function escalar(){
+  const mesa = document.querySelector(".table");
+  if(!mesa) return;
+  const disponible = mesa.clientWidth - 72;
+  document.querySelectorAll(".sheet-wrap").forEach(wrap => {
+    const hoja = wrap.querySelector(".sheet");
+    const ancho = hoja.offsetWidth, alto = hoja.offsetHeight;
+    const z = Math.min(1, disponible / ancho);
+    hoja.style.transform = `scale(${z})`;
+    hoja.style.marginLeft = ((disponible - ancho*z)/2) + "px";
+    wrap.style.width  = disponible + "px";
+    wrap.style.height = (alto*z) + "px";
+  });
+}
+window.addEventListener("resize", escalar);
+
+/* ==========================================================
+   Lista
+   ========================================================== */
+function pintarLista(){
+  const ul = $("#roster");
+  ul.innerHTML = "";
+  const n = estado.porHoja;
+
+  estado.items.forEach((it, i) => {
+    const li = document.createElement("li");
+    li.className = "row";
+
+    const pos = document.createElement("span");
+    pos.className = "row__pos";
+    pos.textContent = `H${Math.floor(i/n)+1}·${i % n + 1}`;
+    pos.title = `Hoja ${Math.floor(i/n)+1}, posición ${i % n + 1}`;
+
+    const inp = document.createElement("input");
+    inp.className = "row__name";
+    inp.value = it.nombre;
+    inp.setAttribute("aria-label", "Nombre");
+    inp.addEventListener("input", () => {
+      it.nombre = inp.value; guardar(); pintarHojas();
+    });
+
+    const tinta = document.createElement("span");
+    tinta.className = "row__pip";
+    tinta.style.background = colorDe(it);
+
+    const rol = document.createElement("input");
+    rol.className = "row__role";
+    rol.value = it.rol;
+    rol.setAttribute("aria-label", "Rol");
+    rol.addEventListener("input", () => {
+      it.rol = rol.value.toUpperCase();
+      if(COLOR_ROL[it.rol]) delete it.color;   // vuelve al color propio del rol
+      tinta.style.background = colorDe(it);
+      guardar(); pintarHojas();
+    });
+
+    const del = document.createElement("button");
+    del.className = "row__del";
+    del.textContent = "×";
+    del.title = "Quitar";
+    del.setAttribute("aria-label", `Quitar a ${it.nombre}`);
+    del.addEventListener("click", () => {
+      estado.items.splice(i, 1); guardar(); pintarTodo();
+    });
+
+    li.append(pos, inp, tinta, rol, del);
+    ul.appendChild(li);
+  });
+
+  const total = estado.items.length;
+  $("#vacio").style.display = total ? "none" : "";
+  $("#conteo").textContent = total === 1 ? "1 credencial" : `${total} credenciales`;
+
+  const hojas = Math.max(1, Math.ceil(total / estado.porHoja));
+  $("#resumen").innerHTML = total
+    ? `<b>${total}</b> credenciales · <b>${hojas}</b> ${hojas===1?"hoja":"hojas"}`
+    : "Sin credenciales";
+}
+
+/* Deja a la vista cuánto papel queda libre alrededor, que es lo que
+   decide si una impresora recorta o no. */
+function pintarNotaHoja(){
+  const n    = estado.porHoja;
+  const sep  = parseFloat(SEPARACION[n]);
+  const fila = n / 2;
+  const coma = x => x.toFixed(1).replace(".", ",");
+  const lado   = (215.9 - (2*93 + sep)) / 2;
+  const arriba = (279.4 - (fila*63 + (fila-1)*sep)) / 2;
+  $("#notaHoja").innerHTML =
+    `Credencial <b>9,3 × 6,3 cm</b> · separación para cortar <b>${coma(sep)} mm</b> ` +
+    `· margen libre <b>${coma(lado)} mm</b> a los lados y <b>${coma(arriba)} mm</b> arriba y abajo.`;
+}
+
+function pintarTodo(){ pintarLista(); pintarHojas(); pintarNotaHoja(); }
+
+/* ==========================================================
+   Acciones
+   ========================================================== */
+$("#roles").addEventListener("click", e => {
+  const b = e.target.closest(".role");
+  if(!b) return;
+  document.querySelectorAll(".role").forEach(x => x.setAttribute("aria-pressed", x === b));
+  const caja = $("#cajaOtro");
+  if(b.dataset.rol === "__otro"){
+    caja.classList.add("on"); $("#rolOtro").focus();
+    rolActivo = $("#rolOtro").value.toUpperCase() || "ASISTENTE";
+    colorActivo = $('.tinta[aria-pressed="true"]').dataset.color;
+  }else{
+    caja.classList.remove("on");
+    rolActivo = b.dataset.rol;
+    colorActivo = null;              // usa el color propio del rol
+  }
+});
+$("#rolOtro").addEventListener("input", e => {
+  rolActivo = e.target.value.toUpperCase() || "ASISTENTE";
+});
+$("#tintas").addEventListener("click", e => {
+  const b = e.target.closest(".tinta");
+  if(!b) return;
+  document.querySelectorAll(".tinta").forEach(x => x.setAttribute("aria-pressed", x === b));
+  colorActivo = b.dataset.color;
+});
+
+/* Dos formas de cargar: de a uno (mesón de acreditación) o pegando la lista. */
+let modo = "uno";
+
+$("#modos").addEventListener("click", e => {
+  const b = e.target.closest(".modo");
+  if(!b) return;
+  modo = b.dataset.modo;
+  document.querySelectorAll(".modo").forEach(x => x.setAttribute("aria-pressed", x === b));
+  $("#panelUno").hidden  = modo !== "uno";
+  $("#panelLote").hidden = modo !== "lote";
+  (modo === "uno" ? $("#nombreUno") : $("#nombres")).focus();
+});
+
+/* "Nombre | ROL" permite pegar listas con roles mezclados. */
+function agregarLinea(linea){
+  const p = linea.split("|");
+  const nombre = p[0].trim();
+  if(!nombre) return false;
+  const rol = (p[1] || rolActivo).trim().toUpperCase();
+  const item = { nombre, rol };
+  // Un rol conocido trae su color; uno personalizado usa la tinta elegida.
+  if(!COLOR_ROL[rol] && colorActivo) item.color = colorActivo;
+  estado.items.push(item);
+  return true;
+}
+
+$("#agregar").addEventListener("click", () => {
+  const campo = modo === "uno" ? $("#nombreUno") : $("#nombres");
+  const lineas = campo.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if(!lineas.length){ campo.focus(); return; }
+
+  lineas.forEach(agregarLinea);
+  campo.value = "";
+  guardar(); pintarTodo();
+  campo.focus();
+
+  // De a uno la hoja no se mueve; en lote conviene ver el resultado.
+  if(modo === "lote") document.querySelector(".table").scrollTo({ top:0, behavior:"smooth" });
+});
+
+$("#nombreUno").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); $("#agregar").click(); }
+});
+$("#nombres").addEventListener("keydown", e => {
+  if((e.ctrlKey || e.metaKey) && e.key === "Enter") $("#agregar").click();
+});
+/* Pegar varias líneas en el campo de a uno las reparte igual. */
+$("#nombreUno").addEventListener("paste", e => {
+  const txt = (e.clipboardData || window.clipboardData).getData("text");
+  if(!/\r?\n/.test(txt.trim())) return;
+  e.preventDefault();
+  txt.split(/\r?\n/).map(l => l.trim()).filter(Boolean).forEach(agregarLinea);
+  guardar(); pintarTodo();
+});
+
+$("#vaciar").addEventListener("click", () => {
+  if(!estado.items.length) return;
+  if(confirm("¿Quitar todas las credenciales de la lista?")){
+    estado.items = []; guardar(); pintarTodo();
+  }
+});
+
+$("#imprimir").addEventListener("click", () => {
+  if(!estado.items.length){ $("#nombres").focus(); return; }
+  window.print();
+});
+
+$("#porHoja").addEventListener("click", e => {
+  const b = e.target.closest(".opt");
+  if(!b) return;
+  document.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", x === b));
+  estado.porHoja = +b.dataset.n;
+  guardar(); pintarTodo();
+});
+
+[["#fTitulo","titulo","#hTitulo"],["#fSub","sub",null],["#fInst","inst","#hInst"]]
+  .forEach(([sel, campo, espejo]) => {
+    $(sel).addEventListener("input", e => {
+      estado.evento[campo] = e.target.value;
+      if(espejo) $(espejo).textContent = e.target.value;
+      guardar(); pintarHojas();
+    });
+  });
+
+/* ==========================================================
+   Descargas
+   ========================================================== */
+function avisar(txt){ $("#estado").textContent = txt || ""; }
+
+function descargar(blob, nombre){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = nombre;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function bytesDe(dataUri){
+  const bin = atob(dataUri.slice(dataUri.indexOf(",") + 1));
+  const u = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  return u;
+}
+
+function nombreArchivo(){
+  const base = (estado.evento.titulo || "Credenciales")
+    .replace(/[\\/:*?"<>|]/g, "").trim().slice(0, 60);
+  return "Credenciales - " + (base || "evento");
+}
+
+/* ---------- ZIP (lo usan el .docx y el paquete de imágenes) ---------- */
+const CRC_TABLA = (() => {
+  const t = new Uint32Array(256);
+  for(let n = 0; n < 256; n++){
+    let c = n;
+    for(let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+
+function crc32(b){
+  let c = 0xFFFFFFFF;
+  for(let i = 0; i < b.length; i++) c = CRC_TABLA[(c ^ b[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+async function comprimir(b){
+  if(typeof CompressionStream === "undefined") return null;
+  const flujo = new Blob([b]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+  return new Uint8Array(await new Response(flujo).arrayBuffer());
+}
+
+/* Fecha y hora fijas (formato MS-DOS): así el mismo contenido produce
+   siempre el mismo archivo. */
+const HORA_FIJA  = 0x6000;   // 12:00
+const FECHA_FIJA = 0x5A21;   // 1 de enero de 2025
+
+async function crearZip(archivos){
+  const enc = new TextEncoder();
+  const cuerpo = [], central = [];
+  let salto = 0;
+
+  for(const a of archivos){
+    const nombre = enc.encode(a.nombre);
+    const crudo = a.datos;
+    const suma = crc32(crudo);
+    let datos = await comprimir(crudo), metodo = 8;
+    if(!datos || datos.length >= crudo.length){ datos = crudo; metodo = 0; }
+
+    const local = new DataView(new ArrayBuffer(30));
+    local.setUint32(0,  0x04034b50, true);   // firma
+    local.setUint16(4,  20, true);           // versión mínima
+    local.setUint16(6,  0x0800, true);       // nombres en UTF-8 (tildes y ñ)
+    local.setUint16(8,  metodo, true);
+    local.setUint16(10, HORA_FIJA, true);
+    local.setUint16(12, FECHA_FIJA, true);
+    local.setUint32(14, suma, true);
+    local.setUint32(18, datos.length, true);
+    local.setUint32(22, crudo.length, true);
+    local.setUint16(26, nombre.length, true);
+    local.setUint16(28, 0, true);            // sin campo extra
+    cuerpo.push(new Uint8Array(local.buffer), nombre, datos);
+
+    const dir = new DataView(new ArrayBuffer(46));
+    dir.setUint32(0,  0x02014b50, true);
+    dir.setUint16(4,  20, true);
+    dir.setUint16(6,  20, true);
+    dir.setUint16(8,  0x0800, true);
+    dir.setUint16(10, metodo, true);
+    dir.setUint16(12, HORA_FIJA, true);
+    dir.setUint16(14, FECHA_FIJA, true);
+    dir.setUint32(16, suma, true);
+    dir.setUint32(20, datos.length, true);
+    dir.setUint32(24, crudo.length, true);
+    dir.setUint16(28, nombre.length, true);
+    dir.setUint32(42, salto, true);
+    central.push(new Uint8Array(dir.buffer), nombre);
+
+    salto += 30 + nombre.length + datos.length;
+  }
+
+  const largoCentral = central.reduce((s, p) => s + p.length, 0);
+  const fin = new DataView(new ArrayBuffer(22));
+  fin.setUint32(0, 0x06054b50, true);
+  fin.setUint16(8, archivos.length, true);
+  fin.setUint16(10, archivos.length, true);
+  fin.setUint32(12, largoCentral, true);
+  fin.setUint32(16, salto, true);
+
+  return new Blob([...cuerpo, ...central, new Uint8Array(fin.buffer)]);
+}
+
+/* ---------- Word (.docx) ---------- */
+/* Reproduce el armado del Word original: una celda por credencial,
+   con una columna y una fila vacías como pasillo de corte. */
+function xmlSeguro(t){
+  return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function documentoWord(){
+  const cfg = DOCX.hoja[estado.porHoja] || DOCX.hoja[8];
+  const sep = cfg.sep;
+  const anchoTabla = 2 * DOCX.anchoCred + sep;
+  const margenH = Math.floor((DOCX.anchoHoja - anchoTabla) / 2);
+  let id = 0;
+
+  const celda = it => DOCX.celda
+    .replace("{{TITULO}}", xmlSeguro(estado.evento.titulo))
+    .replace("{{SUB}}",    xmlSeguro(estado.evento.sub))
+    .replace("{{INST}}",   xmlSeguro(estado.evento.inst))
+    .replace("{{NOMBRE}}", xmlSeguro(it.nombre.toUpperCase()))
+    .replace("{{ROL}}",    xmlSeguro(it.rol.toUpperCase()))
+    .replace("{{COLOR}}",  colorDe(it).replace("#", "").toUpperCase())
+    .replace(/<wp:docPr id="\{\{ID\d+\}\}" name="[^"]*"\/>/g,
+             () => `<wp:docPr id="${++id}" name="Imagen ${id}"/>`);
+
+  const hueca = ancho =>
+    `<w:tc><w:tcPr><w:tcW w:w="${ancho}" w:type="dxa"/></w:tcPr>` +
+    `<w:p><w:pPr><w:rPr><w:sz w:val="2"/></w:rPr></w:pPr></w:p></w:tc>`;
+
+  const colSep = hueca(sep);
+  const filaSep =
+    `<w:tr><w:trPr><w:trHeight w:hRule="exact" w:val="${sep}"/><w:cantSplit/></w:trPr>` +
+    hueca(DOCX.anchoCred) + colSep + hueca(DOCX.anchoCred) + "</w:tr>";
+
+  let filas = "";
+  for(let i = 0; i < estado.items.length; i += 2){
+    const a = estado.items[i], b = estado.items[i + 1];
+    filas +=
+      `<w:tr><w:trPr><w:trHeight w:hRule="exact" w:val="${DOCX.altoCred}"/><w:cantSplit/></w:trPr>` +
+      celda(a) + colSep + (b ? celda(b) : hueca(DOCX.anchoCred)) + "</w:tr>" + filaSep;
+  }
+
+  const tabla =
+    `<w:tbl><w:tblPr><w:tblW w:w="${anchoTabla}" w:type="dxa"/><w:jc w:val="center"/>` +
+    DOCX.sinBordes +
+    '<w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="0" w:type="dxa"/>' +
+    '<w:bottom w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tblCellMar>' +
+    '<w:tblLayout w:type="fixed"/></w:tblPr>' +
+    `<w:tblGrid><w:gridCol w:w="${DOCX.anchoCred}"/><w:gridCol w:w="${sep}"/>` +
+    `<w:gridCol w:w="${DOCX.anchoCred}"/></w:tblGrid>` + filas + "</w:tbl>";
+
+  const sect =
+    `<w:sectPr><w:pgSz w:w="${DOCX.anchoHoja}" w:h="15840"/>` +
+    `<w:pgMar w:top="${cfg.margenV}" w:right="${margenH}" w:bottom="${cfg.margenV}" ` +
+    `w:left="${margenH}" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr>`;
+
+  return DOCX.cabecera + DOCX.raiz + "<w:body>" + tabla +
+         '<w:p><w:pPr><w:rPr><w:sz w:val="2"/></w:rPr></w:pPr></w:p>' +
+         sect + "</w:body></w:document>";
+}
+
+async function descargarWord(){
+  const enc = new TextEncoder();
+  const archivos = [
+    { nombre: "[Content_Types].xml",         datos: enc.encode(DOCX.contentTypes) },
+    { nombre: "_rels/.rels",                 datos: enc.encode(DOCX.rels) },
+    { nombre: "word/document.xml",           datos: enc.encode(documentoWord()) },
+    { nombre: "word/_rels/document.xml.rels",datos: enc.encode(DOCX.docRels) },
+    { nombre: "word/styles.xml",             datos: enc.encode(DOCX.styles) }
+  ];
+  DOCX.imagenes.forEach((clave, i) => {
+    archivos.push({ nombre: `word/media/image${i + 1}.png`, datos: bytesDe(LOGOS[clave]) });
+  });
+  descargar(await crearZip(archivos), nombreArchivo() + ".docx");
+}
+
+/* ---------- Imágenes (PNG) ---------- */
+/* Se dibuja la credencial dentro de un SVG y se pasa a un lienzo. */
+function estilosCredencial(){
+  let css = "";
+  for(const hoja of document.styleSheets){
+    let reglas;
+    try{ reglas = hoja.cssRules; }catch(e){ continue; }
+    for(const r of reglas){
+      // :root trae las variables de tipografía que usa la credencial.
+      if(r.selectorText && /(^|,\s*)(\.cred\b|:root$)/.test(r.selectorText)) css += r.cssText + "\n";
+    }
+  }
+  return css;
+}
+
+async function pngDe(item, css, escala){
+  const ancho = 93 / 25.4 * 96, alto = 63 / 25.4 * 96;   // px CSS
+  const caja = document.createElement("div");
+  caja.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+  const est = document.createElement("style");
+  est.textContent = css;
+  caja.append(est, credencial(item));
+
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${ancho}" height="${alto}">` +
+    `<foreignObject width="100%" height="100%">` +
+    new XMLSerializer().serializeToString(caja) +
+    "</foreignObject></svg>";
+
+  const img = new Image();
+  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  await img.decode();
+
+  const lienzo = document.createElement("canvas");
+  lienzo.width = Math.round(ancho * escala);
+  lienzo.height = Math.round(alto * escala);
+  const ctx = lienzo.getContext("2d");
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+  ctx.drawImage(img, 0, 0, lienzo.width, lienzo.height);
+
+  return new Promise(r => lienzo.toBlob(r, "image/png"));
+}
+
+async function descargarImagenes(){
+  const css = estilosCredencial();
+  const escala = 300 / 96;                       // 300 puntos por pulgada
+  const total = estado.items.length;
+  const limpio = t => t.replace(/[\\/:*?"<>|]/g, "").trim() || "sin nombre";
+
+  if(total === 1){
+    const blob = await pngDe(estado.items[0], css, escala);
+    descargar(blob, limpio(estado.items[0].nombre.toUpperCase()) + ".png");
+    return;
+  }
+
+  const archivos = [];
+  for(let i = 0; i < total; i++){
+    avisar(`Generando imágenes… ${i + 1} de ${total}`);
+    const blob = await pngDe(estado.items[i], css, escala);
+    const n = String(i + 1).padStart(String(total).length, "0");
+    archivos.push({
+      nombre: `${n} - ${limpio(estado.items[i].nombre.toUpperCase())}.png`,
+      datos: new Uint8Array(await blob.arrayBuffer())
+    });
+  }
+  avisar("Comprimiendo…");
+  descargar(await crearZip(archivos), nombreArchivo() + " (imagenes).zip");
+}
+
+/* ---------- Conexiones ---------- */
+async function conAviso(boton, tarea, listo){
+  if(!estado.items.length){ avisar("Primero agrega nombres a la lista."); return; }
+  const botones = document.querySelectorAll(".descargas .btn");
+  botones.forEach(b => b.disabled = true);
+  avisar("Preparando…");
+  try{
+    await tarea();
+    avisar(listo);
+  }catch(e){
+    avisar("No se pudo generar el archivo: " + e.message);
+  }finally{
+    botones.forEach(b => b.disabled = false);
+  }
+}
+
+$("#dlWord").addEventListener("click", () =>
+  conAviso(null, descargarWord, "Word descargado."));
+
+$("#dlPng").addEventListener("click", () =>
+  conAviso(null, descargarImagenes, "Imágenes descargadas (300 ppp)."));
+
+$("#dlPdf").addEventListener("click", () => {
+  if(!estado.items.length){ avisar("Primero agrega nombres a la lista."); return; }
+  avisar('En destino elige "Guardar como PDF" y deja la escala en 100 %.');
+  setTimeout(() => window.print(), 400);
+});
+
+/* ==========================================================
+   Arranque
+   ========================================================== */
+cargar();
+$("#fTitulo").value = estado.evento.titulo;
+$("#fSub").value    = estado.evento.sub;
+$("#fInst").value   = estado.evento.inst;
+$("#hTitulo").textContent = estado.evento.titulo;
+$("#hInst").textContent   = estado.evento.inst;
+document.querySelectorAll(".opt").forEach(x =>
+  x.setAttribute("aria-pressed", +x.dataset.n === estado.porHoja));
+pintarTodo();
+</script>
+</body>
+</html>
