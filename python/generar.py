@@ -31,6 +31,7 @@ LOGOS = {
     "blunding": "blunding.png",
     "sbsports": "sb-sports.png",
     "sanbarto": "san-bartolome.png",
+    "essity":   "essity.png",
 }
 
 
@@ -66,7 +67,7 @@ def piezas_word() -> dict:
         "anchoHoja": w.ANCHO_HOJA,
         "hoja": {str(k): {"sep": v["sep"], "margenV": v["margenV"]} for k, v in w.HOJA.items()},
         # El Word original numera las imágenes en este orden.
-        "imagenes": ["acem", "arco", "sanbarto", "double", "bago", "blunding", "sbsports"],
+        "imagenes": ["acem", "arco", "sanbarto", "double", "bago", "blunding", "sbsports", "essity"],
     }
 
 

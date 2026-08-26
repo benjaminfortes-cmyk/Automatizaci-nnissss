@@ -72,7 +72,7 @@ DOC_RELS = CABECERA + (
     '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
     + "".join(
         f'<Relationship Id="rId{n + 4}" Type="{_IMG}" Target="media/image{n}.png"/>'
-        for n in range(1, 8)
+        for n in range(1, 9)
     )
     + "</Relationships>"
 )
@@ -194,7 +194,7 @@ def armar(items, evento, por_hoja, destino: Path):
         z.writestr("word/document.xml", doc)
         z.writestr("word/_rels/document.xml.rels", DOC_RELS)
         z.writestr("word/styles.xml", STYLES)
-        for n in range(1, 8):
+        for n in range(1, 9):
             z.writestr(f"word/media/image{n}.png", (AQUI.parent / "recursos" / "logos" / ORDEN[n]).read_bytes())
     return destino
 
@@ -208,6 +208,7 @@ ORDEN = {
     5: "bago.png",
     6: "blunding.png",
     7: "sb-sports.png",
+    8: "essity.png",
 }
 
 

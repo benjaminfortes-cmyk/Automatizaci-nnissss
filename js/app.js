@@ -79,11 +79,12 @@ function credencial(item){
     <div class="regla"></div>
 
     <div class="t auspician">Auspician</div>
-    <img src="${LOGOS.bago}"     style="left:14.24pt; top:131.42pt; width:30.6pt; height:10.5pt">
-    <img src="${LOGOS.double}"   style="left:53.49pt; top:131.47pt; width:53.3pt; height:12.6pt">
-    <img src="${LOGOS.blunding}" style="left:112.49pt;top:131.62pt; width:49.9pt; height:11.75pt">
-    <img src="${LOGOS.sbsports}" style="left:169.64pt;top:130.52pt; width:48.8pt; height:12.85pt">
-    <img src="${LOGOS.sanbarto}" style="left:226.64pt;top:128.02pt; width:22.75pt;height:19.9pt">
+    <img src="${LOGOS.bago}"     style="left:8.01pt;  top:131.97pt; width:27.39pt;height:9.4pt">
+    <img src="${LOGOS.double}"   style="left:40.39pt; top:132.13pt; width:47.7pt; height:11.28pt">
+    <img src="${LOGOS.blunding}" style="left:93.1pt;  top:132.24pt; width:44.66pt;height:10.52pt">
+    <img src="${LOGOS.sbsports}" style="left:142.76pt;top:131.19pt; width:43.68pt;height:11.5pt">
+    <img src="${LOGOS.sanbarto}" style="left:191.43pt;top:129.06pt; width:20.36pt;height:17.81pt">
+    <img src="${LOGOS.essity}"   style="left:216.8pt; top:132.3pt;  width:38.82pt;height:10pt">
 
     <div class="barra"></div>
     <div class="rol">${esc(item.rol)}</div>`;
