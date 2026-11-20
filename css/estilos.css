@@ -328,28 +328,29 @@ details.set[open] > summary::before{content:"– "}
   position:absolute; left:0; width:100%; text-align:center;
   line-height:1; white-space:nowrap;
 }
-.cred .titulo   {font-size:12pt;    font-weight:700; color:#1d2d59; top:32.54pt}
-.cred .subtitulo{font-size:10.56pt; font-weight:700; color:#3e9fa0; top:47.66pt}
-.cred .inst     {font-size:9.96pt;  font-weight:400; color:#6b6b6b; top:62.51pt}
+/* Medidas sacadas del Word de Medicina Interna, en pt desde la esquina. */
+.cred .ola-izq  {left:0;       top:0;     width:92.9pt; height:43.1pt}
+.cred .ola-der  {left:190.3pt; top:0;     width:73.3pt; height:46.7pt; transform:scaleX(-1)}
+.cred .logo-acem{left:69.6pt;  top:6.8pt; width:30.5pt; height:30.5pt}
+.cred .logo-ucn {left:113.9pt; top:7.8pt; width:30.5pt; height:30.5pt}
+.cred .logo-alba{left:154.6pt; top:6.8pt; width:40.9pt; height:31.1pt}
+
+.cred .titulo   {font-size:11.04pt; font-weight:700; color:#1d2d59; top:60.52pt; text-transform:uppercase}
+.cred .subtitulo{font-size:9.96pt;  font-weight:700; color:#4184b4; top:74.63pt}
+.cred .inst     {font-size:9pt;     font-weight:400; color:#6b6b6b; top:88.65pt}
 .cred .nombre   {font-weight:700; color:#747474; text-transform:uppercase}
-.cred .regla{position:absolute; left:3.57pt; top:103.94pt; width:256.49pt; height:.48pt; background:#d9d9d9}
-.cred .auspician{
-  font-size:9pt; font-weight:700; color:#6b6b6b; top:113.39pt;
-  letter-spacing:.5pt; text-transform:uppercase;
-}
+.cred .regla{position:absolute; left:3.48pt; top:135.1pt; width:256.5pt; height:.48pt; background:#d9d9d9}
 
 .cred .barra{
-  position:absolute; left:7.11pt; top:148.02pt; width:249.41pt; height:25.56pt;
-  background:var(--rol,#1d2d59);
+  position:absolute; left:7.08pt; top:146.9pt; width:249.4pt; height:25.4pt;
+  background:var(--rol,#4184b4);
 }
 .cred .rol{
-  position:absolute; left:0; width:100%; text-align:center; top:155.82pt;
+  position:absolute; left:0; width:100%; text-align:center; top:154.7pt;
   font-size:12pt; font-weight:700; color:#fff; line-height:1;
   letter-spacing:1pt; text-transform:uppercase; white-space:nowrap;
 }
 
-.cred .arco-der{position:absolute; right:.07pt; top:.13pt; width:33.6pt; height:36.45pt}
-.cred .arco-der img{left:-1.425pt; top:1.425pt; width:36.45pt; height:33.6pt; transform:rotate(90deg)}
 
 @page{ size:letter; margin:0 }
 

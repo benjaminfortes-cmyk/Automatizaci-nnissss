@@ -1,4 +1,4 @@
-# Credenciales — 2ª Jornada de Traumatología
+# Credenciales — 2ª Jornada de Investigación de Medicina Interna
 
 Programa web para imprimir las credenciales del evento. Escribes o pegas
 los nombres y salen maquetadas con el mismo diseño del Word original.
@@ -11,8 +11,10 @@ También funciona sin internet: descarga `index.html` y ábrelo con doble clic.
 
 - Carga de nombres **uno por uno** (Enter agrega y deja el campo listo) o
   **pegando la lista** completa, un nombre por línea.
-- Barra de color según el rol, igual que en el original:
-  ASISTENTE verde azulado, ORGANIZADOR azul marino, EXPOSITOR magenta.
+- Diseño del Word `recursos/Credenciales Medicina Interna.docx`: ondas
+  azules y logos de ACEM UCN, UCN y Universidad del Alba.
+- La barra del rol (ASISTENTE, ORGANIZADOR, EXPOSITOR) va siempre en el
+  azul de "de Medicina Interna" (#4184B4).
   Con "Otro…" eliges cualquier color desde una paleta.
 - Cada credencial mide **9,3 × 6,3 cm**, con separación entre tarjetas
   para pasar la tijera por el medio.
@@ -29,14 +31,14 @@ En el cuadro de impresión de Chrome, en "Más ajustes":
 
 Sin esto la barra de color no se imprime y las medidas salen achicadas.
 
-## Carpeta `_fuente`
+## Carpeta `python`
 
 Los archivos con los que se arma `index.html`: la plantilla, los
 logotipos y los scripts que extraen el diseño del Word original.
 No hace falta para usar el programa.
 
-Para rehacer `index.html` después de un cambio:
+Para rehacer `js/datos.js` (logos y plantilla Word) después de un cambio:
 
 ```
-python _fuente/generar.py
+python python/generar.py
 ```

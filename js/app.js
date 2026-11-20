@@ -3,15 +3,18 @@ const DOCX = DATOS.word;
 document.getElementById("fotoChica").src = DATOS.foto;
 document.getElementById("fotoGrande").src = DATOS.foto;
 
-const CLAVE = "acem-credenciales-v1";
+// v2: diseño de Medicina Interna. La lista guardada con v1 se conserva,
+// pero los datos del evento y los colores parten de nuevo.
+const CLAVE = "acem-credenciales-v2";
+const CLAVE_V1 = "acem-credenciales-v1";
 
 const estado = {
   items: [],
   porHoja: 8,
   evento: {
-    titulo: "2ª JORNADA DE TRAUMATOLOGÍA",
-    sub:    "y Medicina del Ejercicio y Estilo de Vida",
-    inst:   "ACEM UCN  ·  Universidad Católica del Norte"
+    titulo: "2ª JORNADA DE INVESTIGACIÓN",
+    sub:    "de Medicina Interna",
+    inst:   "ACEM UCN  ·  Universidad Católica del Norte  ·  Universidad del Alba"
   }
 };
 let rolActivo = "ASISTENTE";
@@ -25,7 +28,12 @@ function guardar(){
 function cargar(){
   try{
     const d = JSON.parse(localStorage.getItem(CLAVE) || "null");
-    if(!d) return;
+    if(!d){
+      const viejo = JSON.parse(localStorage.getItem(CLAVE_V1) || "null");
+      if(viejo && Array.isArray(viejo.items))
+        estado.items = viejo.items.map(it => ({ nombre: it.nombre, rol: it.rol }));
+      return;
+    }
     if(Array.isArray(d.items)) estado.items = d.items;
     if(d.porHoja) estado.porHoja = d.porHoja;
     if(d.evento) Object.assign(estado.evento, d.evento);
@@ -33,14 +41,14 @@ function cargar(){
 }
 
 const ANCHO_NOMBRE = 249.41;
-const BASE_NOMBRE  = 98.78;
+const BASE_NOMBRE  = 130;
 
 const COLOR_ROL = {
-  ASISTENTE:   "#3e9fa0",
-  ORGANIZADOR: "#1d2d59",
-  EXPOSITOR:   "#9e1f79"
+  ASISTENTE:   "#4184b4",
+  ORGANIZADOR: "#4184b4",
+  EXPOSITOR:   "#4184b4"
 };
-const COLOR_POR_DEFECTO = "#1d2d59";
+const COLOR_POR_DEFECTO = "#4184b4";
 
 function colorDe(item){
   return item.color || COLOR_ROL[(item.rol || "").toUpperCase()] || COLOR_POR_DEFECTO;
@@ -67,9 +75,11 @@ function credencial(item){
   el.className = "cred";
   el.style.setProperty("--rol", colorDe(item));
   el.innerHTML = `
-    <img src="${LOGOS.arco}"     style="left:.05pt;  top:.18pt;  width:36.45pt; height:33.6pt">
-    <span class="arco-der"><img src="${LOGOS.arco}"></span>
-    <img src="${LOGOS.acem}"     style="left:119.94pt; top:2.33pt; width:23.75pt; height:26.2pt">
+    <img class="ola-izq" src="${LOGOS.olaIzq}" alt="">
+    <img class="ola-der" src="${LOGOS.olaDer}" alt="">
+    <img class="logo-acem" src="${LOGOS.acem}" alt="">
+    <img class="logo-ucn"  src="${LOGOS.ucn}"  alt="">
+    <img class="logo-alba" src="${LOGOS.alba}" alt="">
 
     <div class="t titulo">${esc(ev.titulo)}</div>
     <div class="t subtitulo">${esc(ev.sub)}</div>
@@ -77,14 +87,6 @@ function credencial(item){
 
     <div class="t nombre" style="top:${top}pt; font-size:${s}pt">${esc(nombre)}</div>
     <div class="regla"></div>
-
-    <div class="t auspician">Auspician</div>
-    <img src="${LOGOS.bago}"     style="left:8.01pt;  top:131.97pt; width:27.39pt;height:9.4pt">
-    <img src="${LOGOS.double}"   style="left:40.39pt; top:132.13pt; width:47.7pt; height:11.28pt">
-    <img src="${LOGOS.blunding}" style="left:93.1pt;  top:132.24pt; width:44.66pt;height:10.52pt">
-    <img src="${LOGOS.sbsports}" style="left:142.76pt;top:131.19pt; width:43.68pt;height:11.5pt">
-    <img src="${LOGOS.sanbarto}" style="left:191.43pt;top:129.06pt; width:20.36pt;height:17.81pt">
-    <img src="${LOGOS.essity}"   style="left:216.8pt; top:132.3pt;  width:38.82pt;height:10pt">
 
     <div class="barra"></div>
     <div class="rol">${esc(item.rol)}</div>`;
@@ -472,7 +474,7 @@ function documentoWord(){
     .replace("{{INST}}",   xmlSeguro(estado.evento.inst))
     .replace("{{NOMBRE}}", xmlSeguro(it.nombre.toUpperCase()))
     .replace("{{ROL}}",    xmlSeguro(it.rol.toUpperCase()))
-    .replace("{{COLOR}}",  colorDe(it).replace("#", "").toUpperCase())
+    .replaceAll("{{COLOR}}",  colorDe(it).replace("#", "").toUpperCase())
     .replace(/<wp:docPr id="\{\{ID\d+\}\}" name="[^"]*"\/>/g,
              () => `<wp:docPr id="${++id}" name="Imagen ${id}"/>`);
 

@@ -24,14 +24,11 @@ SALIDA = RAIZ / "js" / "datos.js"
 sys.path.insert(0, str(AQUI))
 
 LOGOS = {
-    "arco":     "arco.png",
-    "acem":     "acem-ucn.png",
-    "bago":     "bago.png",
-    "double":   "double-medical.png",
-    "blunding": "blunding.png",
-    "sbsports": "sb-sports.png",
-    "sanbarto": "san-bartolome.png",
-    "essity":   "essity.png",
+    "olaIzq": "ola-izq.png",
+    "olaDer": "ola-der.png",
+    "acem":   "acem.png",
+    "ucn":    "ucn.png",
+    "alba":   "alba.png",
 }
 
 
@@ -66,8 +63,8 @@ def piezas_word() -> dict:
         "altoCred": w.ALTO_CRED,
         "anchoHoja": w.ANCHO_HOJA,
         "hoja": {str(k): {"sep": v["sep"], "margenV": v["margenV"]} for k, v in w.HOJA.items()},
-        # El Word original numera las imágenes en este orden.
-        "imagenes": ["acem", "arco", "sanbarto", "double", "bago", "blunding", "sbsports", "essity"],
+        # El Word de Medicina Interna numera las imágenes en este orden.
+        "imagenes": ["olaDer", "olaIzq", "alba", "acem", "ucn"],
     }
 
 

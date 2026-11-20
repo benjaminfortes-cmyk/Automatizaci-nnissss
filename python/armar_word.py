@@ -72,7 +72,7 @@ DOC_RELS = CABECERA + (
     '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
     + "".join(
         f'<Relationship Id="rId{n + 4}" Type="{_IMG}" Target="media/image{n}.png"/>'
-        for n in range(1, 9)
+        for n in range(1, 6)
     )
     + "</Relationships>"
 )
@@ -194,21 +194,19 @@ def armar(items, evento, por_hoja, destino: Path):
         z.writestr("word/document.xml", doc)
         z.writestr("word/_rels/document.xml.rels", DOC_RELS)
         z.writestr("word/styles.xml", STYLES)
-        for n in range(1, 9):
+        for n in ORDEN:
             z.writestr(f"word/media/image{n}.png", (AQUI.parent / "recursos" / "logos" / ORDEN[n]).read_bytes())
     return destino
 
 
-# El Word original numera las imágenes así; la plantilla las llama por ese nombre.
+# El Word de Medicina Interna numera las imágenes así (rId5 = image1, ...);
+# la plantilla las llama por ese nombre.
 ORDEN = {
-    1: "acem-ucn.png",
-    2: "arco.png",
-    3: "san-bartolome.png",
-    4: "double-medical.png",
-    5: "bago.png",
-    6: "blunding.png",
-    7: "sb-sports.png",
-    8: "essity.png",
+    1: "ola-der.png",
+    2: "ola-izq.png",
+    3: "alba.png",
+    4: "acem.png",
+    5: "ucn.png",
 }
 
 
@@ -216,14 +214,14 @@ if __name__ == "__main__":
     import tempfile
 
     evento = {
-        "titulo": "2ª JORNADA DE TRAUMATOLOGÍA",
-        "sub": "y Medicina del Ejercicio y Estilo de Vida",
-        "inst": "ACEM UCN  ·  Universidad Católica del Norte",
+        "titulo": "2ª JORNADA DE INVESTIGACIÓN",
+        "sub": "de Medicina Interna",
+        "inst": "ACEM UCN  ·  Universidad Católica del Norte  ·  Universidad del Alba",
     }
     items = (
-        [{"nombre": f"Asistente {i}", "rol": "ASISTENTE", "color": "#3e9fa0"} for i in range(1, 5)]
-        + [{"nombre": f"Organizador {i}", "rol": "ORGANIZADOR", "color": "#1d2d59"} for i in range(1, 5)]
-        + [{"nombre": "Dra. Sandra Mahecha", "rol": "EXPOSITOR", "color": "#9e1f79"}]
+        [{"nombre": f"Asistente {i}", "rol": "ASISTENTE", "color": "#4184b4"} for i in range(1, 5)]
+        + [{"nombre": f"Organizador {i}", "rol": "ORGANIZADOR", "color": "#4184b4"} for i in range(1, 5)]
+        + [{"nombre": "Dra. Sandra Mahecha", "rol": "EXPOSITOR", "color": "#4184b4"}]
     )
     salida = Path(tempfile.gettempdir()) / "prueba_credenciales.docx"
     armar(items, evento, 8, salida)
